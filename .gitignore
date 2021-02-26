@@ -20,3 +20,7 @@ IPDP/slides/01introduction.toc
 IPDP/slides/01introduction.vrb
 *.aux
 ~$neralCalendar.docx
+IPDP/jupyter/jupyterNotebooks/.ipynb_checkpoints/stdout-checkpoint.txt
+IPDP/jupyter/jupyterNotebooks/assignments/.ipynb_checkpoints/02AssignmentsDataTypesAndOperations-checkpoint.ipynb
+IPDP/jupyter/jupyterNotebooks/stdout.txt
+IPDP/jupyter/jupyterNotebooks/assignments/.ipynb_checkpoints/02AssignmentsDataTypesAndOperations-checkpoint.ipynb
