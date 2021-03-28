@@ -97,14 +97,16 @@ def cv_scores_explained(model, X, y):
     
     for train, test in cv.split(X, y):
         # fitting model on K-1 folds
+        
         scaler = StandardScaler()
-        X_train = scaler.fit_transform(X[train, :])
+        # fitting and scaling a StandardScaler
+        X_train = scaler.fit_transform(X[train, :])    #learn the parameters  and scaling  
+        # scaling on test set
+        X_test = scaler.transform(X[test, :]) # scaling using training parameters
         
+        # training model
         model.fit(X_train, y[train])
-        
         # prediciton on test set
-        X_test = scaler.transform(X[test, :])
-        
         y_pred = model.predict(X_test)
         
         # getting testing accuracy, f1 and recall score (Positive and Negative class)
@@ -113,7 +115,7 @@ def cv_scores_explained(model, X, y):
         recall = metrics.recall_score(y[test], y_pred, average=None)
         
         # getting training recall score (Positive and Negative class)
-        recall_training = metrics.recall_score(y[train], model.predict(X[train, :]),average=None)
+        recall_training = metrics.recall_score(y[train], model.predict(X_train),average=None)
         
         # saving partial 'fold' results
         recalls_test.append(recall)
@@ -361,14 +363,7 @@ def plot_dendrograms(X):
     plt.tight_layout()
     
 
-# # 99 no fraud - 1 froud
-# tp, tn, fp, fn = 0, 99, 0, 1 
-# acc = (tp + tn) / (tp + tn + fp + fn)
-# recall = tp/(tp+fn)
-# precision = 0
-# f1 = 0
 
-# acc, recall, precision
 
 from sklearn.inspection import permutation_importance
 #https://scikit-learn.org/stable/auto_examples/inspection/plot_permutation_importance.html#sphx-glr-auto-examples-inspection-plot-permutation-importance-py
