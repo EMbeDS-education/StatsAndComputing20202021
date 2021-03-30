@@ -52,11 +52,11 @@ def biplot_pca(transformed_features, pca, columns, lenght=3.0, scaling_factor = 
     
 
 # for visualization  (and teaching) purpose
-def draw_boundary( algo, X_train,X_test,y_train,y_test):
+def draw_boundary( algo, X_train,X_test, y_train, y_test):
     algo_name = type(algo).__name__
     # for visualization
     reduction = PCA(n_components=2)
-    X_train_reduced = reduction.fit_transform(X_train)
+    X_train_reduced = reduction.fit_transform(X_train)    
     X_test_reduced = reduction.transform(X_test)
 
     # Trains model
@@ -67,12 +67,17 @@ def draw_boundary( algo, X_train,X_test,y_train,y_test):
     # Training and Test sets  
     sets = {"Training":(X_train_reduced, y_train), # Trainig set boundary
             "Testing":(X_test_reduced, y_test)} # Test set boundary
-   
+    
+    print('sss')
+    #meshgrid 
+    X1, X2 = np.meshgrid(np.arange(start = X_test_reduced[:, 0].min() - 1, stop = X_test_reduced[:, 0].max() + 1, step = 0.1),
+                             np.arange(start = X_test_reduced[:, 1].min() - 1, stop = X_test_reduced[:, 1].max() + 1, step = 0.1))
+    
     for setname, (X_set, y_set) in sets.items():
         plt.figure(figsize = (14,6))
-
-        X1, X2 = np.meshgrid(np.arange(start = X_set[:, 0].min() - 1, stop = X_set[:, 0].max() + 1, step = 0.1),
-                             np.arange(start = X_set[:, 1].min() - 1, stop = X_set[:, 1].max() + 1, step = 0.1))
+        
+        
+       
         plt.contourf(X1, X2, classifier.predict(np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape),
                      alpha = 0.6, cmap = ListedColormap(( 'green','red')))
         plt.xlim(X1.min(), X1.max())
@@ -97,14 +102,16 @@ def cv_scores_explained(model, X, y):
     
     for train, test in cv.split(X, y):
         # fitting model on K-1 folds
+        
         scaler = StandardScaler()
-        X_train = scaler.fit_transform(X[train, :])
+        # fitting and scaling a StandardScaler
+        X_train = scaler.fit_transform(X[train, :])    #learn the parameters  and scaling  
+        # scaling on test set
+        X_test = scaler.transform(X[test, :]) # scaling using training parameters
         
+        # training model
         model.fit(X_train, y[train])
-        
         # prediciton on test set
-        X_test = scaler.transform(X[test, :])
-        
         y_pred = model.predict(X_test)
         
         # getting testing accuracy, f1 and recall score (Positive and Negative class)
@@ -113,7 +120,7 @@ def cv_scores_explained(model, X, y):
         recall = metrics.recall_score(y[test], y_pred, average=None)
         
         # getting training recall score (Positive and Negative class)
-        recall_training = metrics.recall_score(y[train], model.predict(X[train, :]),average=None)
+        recall_training = metrics.recall_score(y[train], model.predict(X_train),average=None)
         
         # saving partial 'fold' results
         recalls_test.append(recall)
@@ -361,14 +368,7 @@ def plot_dendrograms(X):
     plt.tight_layout()
     
 
-# # 99 no fraud - 1 froud
-# tp, tn, fp, fn = 0, 99, 0, 1 
-# acc = (tp + tn) / (tp + tn + fp + fn)
-# recall = tp/(tp+fn)
-# precision = 0
-# f1 = 0
 
-# acc, recall, precision
 
 from sklearn.inspection import permutation_importance
 #https://scikit-learn.org/stable/auto_examples/inspection/plot_permutation_importance.html#sphx-glr-auto-examples-inspection-plot-permutation-importance-py

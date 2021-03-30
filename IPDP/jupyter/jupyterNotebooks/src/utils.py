@@ -52,11 +52,11 @@ def biplot_pca(transformed_features, pca, columns, lenght=3.0, scaling_factor = 
     
 
 # for visualization  (and teaching) purpose
-def draw_boundary( algo, X_train,X_test,y_train,y_test):
+def draw_boundary( algo, X_train,X_test, y_train, y_test):
     algo_name = type(algo).__name__
     # for visualization
     reduction = PCA(n_components=2)
-    X_train_reduced = reduction.fit_transform(X_train)
+    X_train_reduced = reduction.fit_transform(X_train)    
     X_test_reduced = reduction.transform(X_test)
 
     # Trains model
@@ -67,12 +67,17 @@ def draw_boundary( algo, X_train,X_test,y_train,y_test):
     # Training and Test sets  
     sets = {"Training":(X_train_reduced, y_train), # Trainig set boundary
             "Testing":(X_test_reduced, y_test)} # Test set boundary
-   
+    
+    
+    #meshgrid 
+    X1, X2 = np.meshgrid(np.arange(start = X_test_reduced[:, 0].min() - 1, stop = X_test_reduced[:, 0].max() + 1, step = 0.1),
+                             np.arange(start = X_test_reduced[:, 1].min() - 1, stop = X_test_reduced[:, 1].max() + 1, step = 0.1))
+    
     for setname, (X_set, y_set) in sets.items():
         plt.figure(figsize = (14,6))
-
-        X1, X2 = np.meshgrid(np.arange(start = X_set[:, 0].min() - 1, stop = X_set[:, 0].max() + 1, step = 0.1),
-                             np.arange(start = X_set[:, 1].min() - 1, stop = X_set[:, 1].max() + 1, step = 0.1))
+        
+        
+       
         plt.contourf(X1, X2, classifier.predict(np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape),
                      alpha = 0.6, cmap = ListedColormap(( 'green','red')))
         plt.xlim(X1.min(), X1.max())
